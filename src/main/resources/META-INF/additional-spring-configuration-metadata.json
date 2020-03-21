@@ -1,0 +1,41 @@
+{
+  "groups": [
+    {
+      "sourceType": "cn.jcasbin.properties.CasbinProperties",
+      "name": "shiro-jcasbin",
+      "type": "cn.jcasbin.properties.CasbinProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "shiro-jcasbin.enabled",
+      "type": "java.lang.Boolean",
+      "description": "开启 Casbin.",
+      "defaultValue": true
+    },
+    {
+      "name": "shiro-jcasbin.watcher",
+      "type": "java.lang.Boolean",
+      "description": "开启 Casbin Watcher.",
+      "defaultValue": true
+    },
+    {
+      "name": "shiro-jcasbin.watcher-key",
+      "type": "java.lang.String",
+      "description": "EtcdWatcher Key.",
+      "defaultValue": "/casbin/watcher_request"
+    },
+    {
+      "name": "shiro-jcasbin.model",
+      "type": "java.lang.String",
+      "description": "Casbin 模型.",
+      "defaultValue": "classpath:casbin/model_request.conf"
+    },
+    {
+      "name": "shiro-jcasbin.rule-table",
+      "type": "java.lang.String",
+      "description": "规则存储表名.",
+      "defaultValue": "casbin_rule_request"
+    }
+  ]
+}
