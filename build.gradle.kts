@@ -2,6 +2,7 @@ plugins {
     java
     `java-library`
     `maven-publish`
+    signing
     id("io.freefair.lombok") version "4.1.6"
     id("org.springframework.boot") version "2.1.13.RELEASE"
     id("io.spring.dependency-management") version "1.0.8.RELEASE"
@@ -16,7 +17,6 @@ java {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -56,14 +56,58 @@ tasks.withType<Test>() {
     useJUnitPlatform()
 }
 
+val NEXUS_USERNAME: String by project;
+val NEXUS_PASSWORD: String by project;
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
             from(components["java"])
             pom {
-                name.set("shiro-jcasbin-spring-boot-starter")
+                url.set("https://github.com/fanlide/shiro-jcasbin-spring-boot-starter")
+                name.set(project.name)
                 description.set("Apache Shiro and Casbin :: Support :: Spring Boot Web")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("./LICENSE")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("mufeng")
+                        name.set("慕枫")
+                        email.set("javakang@qq.com")
+                    }
+                }
+                scm {
+                    connection.set("https://github.com/fanlide/shiro-jcasbin-spring-boot-starter.git")
+                    url.set(pom.url)
+                }
+            }
+        }
+        repositories {
+            mavenLocal {
+                url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+                credentials {
+                    username = NEXUS_USERNAME
+                    password = NEXUS_PASSWORD
+                }
+            }
+            mavenCentral {
+                url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+                credentials {
+                    username = NEXUS_USERNAME
+                    password = NEXUS_PASSWORD
+                }
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications["mavenJava"])
 }

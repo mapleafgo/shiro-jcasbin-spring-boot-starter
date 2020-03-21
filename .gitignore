@@ -7,3 +7,7 @@
 .gradle/
 .idea/
 build/
+*/lombok.config
+
+./build.gradle.kts
+./secring.gpg
