@@ -7,7 +7,7 @@
 .gradle/
 .idea/
 build/
-*/lombok.config
+**/lombok.config
 
 gradle.properties
 secring.gpg
