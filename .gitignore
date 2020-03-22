@@ -9,5 +9,5 @@
 build/
 */lombok.config
 
-./build.gradle.kts
-./secring.gpg
+gradle.properties
+secring.gpg

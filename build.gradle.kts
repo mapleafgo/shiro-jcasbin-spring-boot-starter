@@ -90,15 +90,8 @@ publishing {
             }
         }
         repositories {
-            mavenLocal {
-                url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-                credentials {
-                    username = NEXUS_USERNAME
-                    password = NEXUS_PASSWORD
-                }
-            }
             mavenCentral {
-                url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+                url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
                 credentials {
                     username = NEXUS_USERNAME
                     password = NEXUS_PASSWORD
