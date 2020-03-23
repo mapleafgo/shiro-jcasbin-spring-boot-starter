@@ -41,8 +41,8 @@ public class CasbinAutoConfiguration {
     public SubjectFactory subjectFactory(DataSource dataSource, Client client) {
         Model model = new Model();
         URL url = new ClassPathResource(properties.getModel()).exists()
-            ? new URL(properties.getModel())
-            : new URL("classpath:conf/model_request.conf");
+            ? ResourceUtils.getURL(properties.getModel())
+            : ResourceUtils.getURL("classpath:conf/model_request.conf");
         model.loadModel(ResourceUtils.getFile(url).getPath());
         Enforcer enforcer = new Enforcer(model, new HutoolDBAdapter(dataSource, properties.getRuleTable()));
         if (client != null && properties.getWatcher()) {
