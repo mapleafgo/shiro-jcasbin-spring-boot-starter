@@ -20,9 +20,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 
 import javax.sql.DataSource;
+import java.net.URL;
 
 @Slf4j
 @Configuration
@@ -38,7 +40,10 @@ public class CasbinAutoConfiguration {
     @SneakyThrows
     public SubjectFactory subjectFactory(DataSource dataSource, Client client) {
         Model model = new Model();
-        model.loadModel(ResourceUtils.getFile(properties.getModel()).getPath());
+        URL url = new ClassPathResource(properties.getModel()).exists()
+            ? new URL(properties.getModel())
+            : new URL("classpath:conf/model_request.conf");
+        model.loadModel(ResourceUtils.getFile(url).getPath());
         Enforcer enforcer = new Enforcer(model, new HutoolDBAdapter(dataSource, properties.getRuleTable()));
         if (client != null && properties.getWatcher()) {
             EtcdWatcher watcher = new EtcdWatcher(client, properties.getWatcherKey());
