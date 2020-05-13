@@ -28,6 +28,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    api("cn.hutool", "hutool-core", "5.3.4")
     api("org.apache.shiro:shiro-spring-boot-web-starter:${shiro}")
     api("cn.wenkang365t:jcasbin-extra:${jcasbinExtra}")
 }

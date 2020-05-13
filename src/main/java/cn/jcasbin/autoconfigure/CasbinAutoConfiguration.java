@@ -1,11 +1,13 @@
 package cn.jcasbin.autoconfigure;
 
+import cn.hutool.core.io.IoUtil;
 import cn.jcasbin.adapter.HutoolDBAdapter;
 import cn.jcasbin.advisor.CasbinAdvisor;
 import cn.jcasbin.properties.CasbinProperties;
 import cn.jcasbin.subject.CasbinDefaultWebSubjectFactory;
 import cn.jcasbin.watcher.EtcdWatcher;
 import io.etcd.jetcd.Client;
+import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.mgt.SubjectFactory;
@@ -15,7 +17,6 @@ import org.casbin.jcasbin.main.Enforcer;
 import org.casbin.jcasbin.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 
 import javax.sql.DataSource;
-import java.net.URL;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 @Slf4j
 @Configuration
@@ -36,20 +38,17 @@ public class CasbinAutoConfiguration {
     private CasbinProperties properties;
 
     @Bean
-    @ConditionalOnMissingBean
     @SneakyThrows
     public SubjectFactory subjectFactory(DataSource dataSource, Client client) {
         Model model = new Model();
-        URL url = new ClassPathResource(properties.getModel()).exists()
-            ? ResourceUtils.getURL(properties.getModel())
-            : ResourceUtils.getURL("classpath:conf/model_request.conf");
-        model.loadModel(ResourceUtils.getFile(url).getPath());
+        String modelPath = new ClassPathResource(properties.getModel()).exists()
+            ? properties.getModel() : "classpath:conf/model_request.conf";
+        @Cleanup InputStream is = ResourceUtils.getURL(modelPath).openStream();
+        model.loadModelFromText(IoUtil.read(is, Charset.defaultCharset()));
         Enforcer enforcer = new Enforcer(model, new HutoolDBAdapter(dataSource, properties.getRuleTable()));
-        if (client != null && properties.getWatcher()) {
-            EtcdWatcher watcher = new EtcdWatcher(client, properties.getWatcherKey());
-            enforcer.setWatcher(watcher);
-            watcher.startWatch();
-        }
+        EtcdWatcher watcher = new EtcdWatcher(client, properties.getWatcherKey());
+        enforcer.setWatcher(watcher);
+        if (properties.getWatcher()) watcher.startWatch();
         return new CasbinDefaultWebSubjectFactory(enforcer);
     }
 

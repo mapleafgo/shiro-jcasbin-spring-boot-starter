@@ -4,10 +4,10 @@ import cn.jcasbin.annotation.RequiresCasbin;
 import cn.jcasbin.aop.CasbinAnnotationsAuthorizingMethodInterceptor;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.NonNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 public class CasbinAdvisor extends StaticMethodMatcherPointcutAdvisor {
     public CasbinAdvisor() {
@@ -15,7 +15,7 @@ public class CasbinAdvisor extends StaticMethodMatcherPointcutAdvisor {
     }
 
     @Override
-    public boolean matches(Method method, Class<?> targetClass) {
+    public boolean matches(@NonNull Method method, Class<?> targetClass) {
         Method m = method;
 
         if (checkAnnotation(m)) {
